@@ -1,0 +1,1511 @@
+REPORT yor_duplicate_ean.
+*----------------------------------------------------------------------*
+INCLUDE yon_duplicate_ean_top. "Global Data
+INCLUDE yon_duplicate_ean_sel. "Selection Screen
+INCLUDE yon_duplicate_ean_cli. "Class Implementation
+INCLUDE yon_duplicate_ean_f01. "Subroutines
+
+*----------------------------------------------------------------------*
+* Initialization
+*----------------------------------------------------------------------*
+INITIALIZATION.
+
+CALL METHOD cl_report_events=>meth_initialization( ).
+
+*----------------------------------------------------------------------*
+* Start of Selection
+*----------------------------------------------------------------------*
+START-OF-SELECTION.
+
+ o_report_events->meth_start_of_sel( ).
+
+*----------------------------------------------------------------------*
+* End of Selection
+*----------------------------------------------------------------------*
+END-OF-SELECTION.
+
+  o_report_events->meth_end_of_sel( ).
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+INCLUDE yon_duplicate_ean_top. "Global Data
+--------------------------------------------------------------------------------------------------------------------------------
+*----------------------------------------------------------------------*
+* Type Declaration
+*----------------------------------------------------------------------*
+TYPES: BEGIN OF ty_mara_mvke_mard,
+         matnr TYPE mara-matnr,
+         maktx TYPE makt-maktx,
+         ersda TYPE mara-ersda,
+         bismt TYPE mara-bismt,
+         meins TYPE mara-meins,
+         ean11 TYPE mara-ean11,
+         vkorg TYPE mvke-vkorg,
+         vtweg TYPE mvke-vtweg,
+         vmsta TYPE mvke-vmsta,
+         vmstd TYPE mvke-vmstd,
+         vrkme TYPE mvke-vrkme,
+         werks TYPE mard-werks,
+         lgort TYPE mard-lgort,
+       END OF ty_mara_mvke_mard,
+       BEGIN OF ty_kotd002,
+         vkorg TYPE vkorg,
+         vtweg TYPE vtweg,
+         matwa TYPE matwa,
+         knumh TYPE knumh,
+       END OF ty_kotd002,
+       BEGIN OF ty_kotd905,
+         vkorg TYPE vkorg,
+         vtweg TYPE vtweg,
+         matwa TYPE matwa,
+         knumh TYPE knumh,
+       END OF ty_kotd905,
+       BEGIN OF ty_kotd906,
+         vkorg TYPE vkorg,
+         vtweg TYPE vtweg,
+         matwa TYPE matwa,
+         knumh TYPE knumh,
+       END OF ty_kotd906,
+       BEGIN OF ty_kotd907,
+         vkorg TYPE vkorg,
+         vtweg TYPE vtweg,
+         werks TYPE werks_d,
+         matwa TYPE matwa,
+         knumh TYPE knumh,
+       END OF ty_kotd907,
+       BEGIN OF ty_kotd908,
+         vkorg TYPE vkorg,
+         matwa TYPE matwa,
+         knumh TYPE knumh,
+       END OF ty_kotd908,
+       BEGIN OF ty_a846,
+         vkorg TYPE vkorg,
+         vtweg TYPE vtweg,
+         matnr TYPE matnr,
+         knumh TYPE knumh,
+       END OF ty_a846,
+       BEGIN OF ty_a841,
+         vkorg TYPE vkorg,
+         matnr TYPE matnr,
+         knumh TYPE knumh,
+       END OF ty_a841,
+       BEGIN OF ty_a839,
+         vkorg TYPE vkorg,
+         vtweg TYPE vtweg,
+         matnr TYPE matnr,
+         knumh TYPE knumh,
+       END OF ty_a839,
+       BEGIN OF ty_a816,
+         vkorg TYPE vkorg,
+         vtweg TYPE vtweg,
+         matnr TYPE matnr,
+         knumh TYPE knumh,
+       END OF ty_a816,
+       BEGIN OF ty_a989,
+         vkorg TYPE vkorg,
+         vtweg TYPE vtweg,
+         vrkme TYPE vrkme,
+         matnr TYPE matnr,
+         knumh TYPE knumh,
+       END OF ty_a989,
+       BEGIN OF ty_a844,
+         vkorg TYPE vkorg,
+         vtweg TYPE vtweg,
+         matnr TYPE matnr,
+         knumh TYPE knumh,
+       END OF ty_a844,
+       BEGIN OF ty_a817,
+         vkorg TYPE vkorg,
+         vtweg TYPE vtweg,
+         knumh TYPE knumh,
+       END OF ty_a817,
+       BEGIN OF ty_a819,
+         vkorg TYPE vkorg,
+         vtweg TYPE vtweg,
+         knumh TYPE knumh,
+       END OF ty_a819,
+       BEGIN OF ty_a822,
+         vkorg TYPE vkorg,
+         matnr TYPE matnr,
+         knumh TYPE knumh,
+       END OF ty_a822,
+       BEGIN OF ty_final,
+         matnr TYPE mara-matnr,
+         maktx TYPE makt-maktx,
+         ersda TYPE mara-ersda,
+         bismt TYPE mara-bismt,
+         meins TYPE mara-meins,
+         ean11 TYPE mara-ean11,
+         vkorg TYPE mvke-vkorg,
+         vtweg TYPE mvke-vtweg,
+         vmsta TYPE mvke-vmsta,
+         vmstd TYPE mvke-vmstd,
+         vrkme TYPE mvke-vrkme,
+         werks TYPE mard-werks,
+         lgort TYPE mard-lgort,
+         kotd002(3) TYPE c,
+         kotd905(3) TYPE c,
+         kotd906(3) TYPE c,
+         kotd907(3) TYPE c,
+         kotd908(3) TYPE c,
+         ap846(3) TYPE c,
+         ap841(3) TYPE c,
+         ap839(3) TYPE c,
+         ap816(3) TYPE c,
+         ap989(3) TYPE c,
+         ap844(3) TYPE c,
+         ap817(3) TYPE c,
+         ap819(3) TYPE c,
+         ap822(3) TYPE c,
+       END OF ty_final,
+       BEGIN OF ty_field,
+         fieldname TYPE lvc_fname,
+       END OF ty_field,
+       BEGIN OF ty_bismt,
+         sign TYPE sign,
+         option TYPE option,
+         low TYPE bismt,
+         high TYPE bismt,
+       END OF ty_bismt,
+*----------------------------------------------------------------------*
+* Table Type Declaration
+*----------------------------------------------------------------------*
+       ty_t_mara_mvke_mard TYPE STANDARD TABLE OF ty_mara_mvke_mard,
+       ty_t_kotd002 TYPE STANDARD TABLE OF ty_kotd002,
+       ty_t_kotd905 TYPE STANDARD TABLE OF ty_kotd905,
+       ty_t_kotd906 TYPE STANDARD TABLE OF ty_kotd906,
+       ty_t_kotd907 TYPE STANDARD TABLE OF ty_kotd907,
+       ty_t_kotd908 TYPE STANDARD TABLE OF ty_kotd908,
+       ty_t_a846    TYPE STANDARD TABLE OF ty_a846,
+       ty_t_a841    TYPE STANDARD TABLE OF ty_a841,
+       ty_t_a839    TYPE STANDARD TABLE OF ty_a839,
+       ty_t_a816    TYPE STANDARD TABLE OF ty_a816,
+       ty_t_a989    TYPE STANDARD TABLE OF ty_a989,
+       ty_t_a844    TYPE STANDARD TABLE OF ty_a844,
+       ty_t_a817    TYPE STANDARD TABLE OF ty_a817,
+       ty_t_a819    TYPE STANDARD TABLE OF ty_a819,
+       ty_t_a822    TYPE STANDARD TABLE OF ty_a822,
+       ty_t_final   TYPE STANDARD TABLE OF ty_final,
+       ty_t_field   TYPE STANDARD TABLE OF ty_field,
+       ty_t_bismt   TYPE STANDARD TABLE OF ty_bismt.
+*----------------------------------------------------------------------*
+*- Constant Declaration
+*----------------------------------------------------------------------*
+CONSTANTS: c_matnr TYPE fieldname VALUE 'S_MATNR',
+           c_werks TYPE fieldname VALUE 'S_WERKS',
+           c_vkorg TYPE fieldname VALUE 'S_VKORG',
+           c_vtweg TYPE fieldname VALUE 'S_VTWEG',
+           c_vmsta TYPE fieldname VALUE 'S_VMSTA',
+           c_eanno TYPE fieldname VALUE 'S_EANNO',
+           c_bismt TYPE fieldname VALUE 'S_BISMT',
+           c_sign  TYPE sign VALUE 'I',
+           c_option TYPE option VALUE 'EQ',
+           c_yes(3) TYPE c VALUE 'Yes',
+           c_no(3)  TYPE c VALUE 'No',
+           c_matdet TYPE kschd VALUE 'Z001',
+           c_condtyp TYPE kscha VALUE 'ZR00'.
+*----------------------------------------------------------------------*
+* Model Class Definition
+*----------------------------------------------------------------------*
+CLASS cl_model DEFINITION FINAL.
+
+  PUBLIC SECTION.
+    DATA: i_mara_mvke_mard TYPE ty_t_mara_mvke_mard,
+          i_kotd002 TYPE  ty_t_kotd002,
+          i_kotd905 TYPE  ty_t_kotd905,
+          i_kotd906 TYPE  ty_t_kotd906,
+          i_kotd907 TYPE  ty_t_kotd907,
+          i_kotd908 TYPE  ty_t_kotd908,
+          i_a846    TYPE  ty_t_a846,
+          i_a841    TYPE  ty_t_a841,
+          i_a839    TYPE  ty_t_a839,
+          i_a816    TYPE  ty_t_a816,
+          i_a989    TYPE  ty_t_a989,
+          i_a844    TYPE  ty_t_a844,
+          i_a817    TYPE  ty_t_a817,
+          i_a819    TYPE  ty_t_a819,
+          i_a822    TYPE  ty_t_a822,
+          i_final   TYPE  ty_t_final,
+          i_vkorg   TYPE  /hex/r_vkorg,
+          i_vtweg   TYPE  /hex/r_vtweg,
+          i_matnr   TYPE  /bev2/ed_rg_t_matnr,
+          i_vrkme   TYPE  j_7l_vrkmeraso_tab,
+          i_werks   TYPE  /bev2/ed_rg_t_werks.
+
+    METHODS:
+      meth_get_data
+        EXCEPTIONS ex_no_data,
+      meth_get_mara_mvke_mard
+        EXCEPTIONS ex_no_data,
+      meth_get_mat_det_data,
+      meth_get_active_price,
+      meth_prepare_final_table.
+
+ENDCLASS.
+*----------------------------------------------------------------------*
+* View Class Definition
+*----------------------------------------------------------------------*
+CLASS cl_view_selection DEFINITION FINAL.
+
+  PUBLIC SECTION.
+
+    CLASS-DATA : g_werks TYPE werks_d,  " Plant
+                 g_matnr TYPE matnr,    " Material No
+                 g_ean   TYPE ean11,    " EAN/UPC Code
+                 g_bismt TYPE bismt,    " Old Material No
+                 g_ersda TYPE ersda,    " Material Creation Date
+                 g_vkorg TYPE vkorg,    " Sales Organization
+                 g_vtweg TYPE vtweg,    " Distribution Channel
+                 g_vmsta TYPE vmsta.    " Distribution Channel Status
+*----------------------------------------------------------------------*
+*  For selection screen validation
+*----------------------------------------------------------------------*
+    METHODS:
+      meth_sel_validate
+        IMPORTING
+          i_fieldname TYPE fieldname,
+      meth_vmsta_validation
+        IMPORTING
+          i_s_vmsta TYPE rjksd_vmsta_range_tab
+        EXCEPTIONS
+          ex_invalid_vmsta,
+      meth_ean11_validation
+        IMPORTING
+          i_s_ean11 TYPE tdt_rg_ean11
+        EXCEPTIONS
+          ex_invalid_ean11,
+      meth_bismt_validation
+        IMPORTING
+          i_s_bismt TYPE ty_t_bismt
+        EXCEPTIONS
+          ex_invalid_bismt.
+
+ENDCLASS.
+*----------------------------------------------------------------------*
+* Output Class Definition
+*----------------------------------------------------------------------*
+CLASS cl_output DEFINITION FINAL.
+
+  PUBLIC SECTION.
+    DATA: i_final TYPE ty_t_final ##NEEDED,
+          i_field TYPE ty_t_field.
+
+*----------------------------------------------------------------------*
+* Method to Display ALV
+*----------------------------------------------------------------------*
+    METHODS: meth_display_output
+              EXCEPTIONS ex_error_in_alv,
+*----------------------------------------------------------------------*
+* On Click Event Handler
+*----------------------------------------------------------------------*
+          meth_on_link_click
+                FOR EVENT link_click OF cl_salv_events_table
+            IMPORTING
+                row  ##NEEDED
+                column. ##NEEDED
+
+  PRIVATE SECTION.
+    DATA:
+      i_alv     TYPE REF TO cl_salv_table,
+      i_func    TYPE REF TO cl_salv_functions,
+      i_display TYPE REF TO cl_salv_display_settings.
+
+    METHODS:
+*----------------------------------------------------------------------*
+* Method to create Field Catalog
+*----------------------------------------------------------------------*
+      meth_set_column_properties.
+
+ENDCLASS.
+*----------------------------------------------------------------------*
+* Controller Class Definition
+*----------------------------------------------------------------------*
+CLASS cl_controller_program DEFINITION FINAL.
+
+  PUBLIC SECTION.
+
+    DATA: o_model  TYPE REF TO cl_model,
+          o_output TYPE REF TO cl_output,
+          o_view   TYPE REF TO cl_view_selection.
+
+    METHODS: meth_get_object IMPORTING  if_name TYPE string
+                             EXCEPTIONS ex_error_initializing.
+
+ENDCLASS.
+*----------------------------------------------------------------------*
+*- Class for Events
+*----------------------------------------------------------------------*
+CLASS cl_report_events DEFINITION FINAL.
+  PUBLIC SECTION.
+*----------------------------------------------------------------------*
+* Method to create Instances
+*----------------------------------------------------------------------*
+    CLASS-METHODS meth_initialization.
+*----------------------------------------------------------------------*
+*  For Start of Selection
+*----------------------------------------------------------------------*
+    METHODS: meth_start_of_sel,
+*----------------------------------------------------------------------*
+* Method for final output
+*----------------------------------------------------------------------*
+             meth_end_of_sel.
+
+ENDCLASS.
+*----------------------------------------------------------------------*
+* Data Declaration
+*----------------------------------------------------------------------*
+DATA: o_control TYPE REF TO cl_controller_program ##NEEDED ,
+      o_report_events TYPE REF TO cl_report_events ##NEEDED .
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+INCLUDE yon_duplicate_ean_sel. "Selection Screen
+--------------------------------------------------------------------------------------------------------------------------------
+SELECTION-SCREEN: BEGIN OF BLOCK blk1 WITH FRAME TITLE text-001.
+
+SELECT-OPTIONS: s_matnr FOR cl_view_selection=>g_matnr,
+                s_eanno FOR cl_view_selection=>g_ean,
+                s_bismt FOR cl_view_selection=>g_bismt,
+                s_ersda FOR cl_view_selection=>g_ersda NO-EXTENSION
+                                                       OBLIGATORY,
+                s_vkorg FOR cl_view_selection=>g_vkorg,
+                s_vtweg FOR cl_view_selection=>g_vtweg,
+                s_vmsta FOR cl_view_selection=>g_vmsta,
+                s_werks FOR cl_view_selection=>g_werks.
+
+SELECTION-SCREEN: END OF BLOCK blk1.
+
+*----------------------------------------------------------------------*
+* AT SELECTION-SCREEN OUTPUT
+*----------------------------------------------------------------------*
+AT SELECTION-SCREEN OUTPUT.
+
+  PERFORM f_view_instance.
+*----------------------------------------------------------------------*
+* At selection on Material
+*----------------------------------------------------------------------*
+AT SELECTION-SCREEN ON s_matnr.
+  IF s_matnr[] IS NOT INITIAL.
+    PERFORM f_view_instance.
+    o_control->o_view->meth_sel_validate( c_matnr ).
+  ENDIF.
+*----------------------------------------------------------------------*
+* At selection on Sales Organization
+*----------------------------------------------------------------------*
+AT SELECTION-SCREEN ON s_vkorg.
+  IF s_vkorg[] IS NOT INITIAL.
+    PERFORM f_view_instance.
+    o_control->o_view->meth_sel_validate( c_vkorg ).
+  ENDIF.
+*----------------------------------------------------------------------*
+* At selection on Distribution Channel
+*----------------------------------------------------------------------*
+AT SELECTION-SCREEN ON s_vtweg.
+  IF s_vtweg[] IS NOT INITIAL.
+    PERFORM f_view_instance.
+    o_control->o_view->meth_sel_validate( c_vtweg ).
+  ENDIF.
+*----------------------------------------------------------------------*
+* At selection on Plant
+*----------------------------------------------------------------------*
+AT SELECTION-SCREEN ON s_werks.
+  IF s_werks[] IS NOT INITIAL.
+    PERFORM f_view_instance.
+    o_control->o_view->meth_sel_validate( c_werks ).
+  ENDIF.
+*----------------------------------------------------------------------*
+* At selection on Distribution Channel Status
+*----------------------------------------------------------------------*
+AT SELECTION-SCREEN ON s_vmsta.
+  IF s_vmsta[] IS NOT INITIAL.
+    PERFORM f_view_instance.
+    o_control->o_view->meth_sel_validate( c_vmsta ).
+  ENDIF.
+*----------------------------------------------------------------------*
+* At selection on EAN/UPC Code
+*----------------------------------------------------------------------*
+AT SELECTION-SCREEN ON s_eanno.
+  IF s_eanno[] IS NOT INITIAL.
+    PERFORM f_view_instance.
+    o_control->o_view->meth_sel_validate( c_eanno ).
+  ENDIF.
+*----------------------------------------------------------------------*
+* At selection on Distribution Channel Status
+*----------------------------------------------------------------------*
+AT SELECTION-SCREEN ON s_bismt.
+  IF s_bismt[] IS NOT INITIAL.
+    PERFORM f_view_instance.
+    o_control->o_view->meth_sel_validate( c_bismt ).
+  ENDIF.
+*----------------------------------------------------------------------*
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+INCLUDE yon_duplicate_ean_cli. "Class Implementation
+--------------------------------------------------------------------------------------------------------------------------------
+*----------------------------------------------------------------------*
+CLASS cl_view_selection IMPLEMENTATION.
+*----------------------------------------------------------------------*
+*- Selection screen valdiation **
+*----------------------------------------------------------------------*
+  METHOD meth_sel_validate.
+
+    CASE i_fieldname.
+      WHEN c_matnr.
+*----------------------------------------------------------------------*
+*  Material Validation
+*----------------------------------------------------------------------*
+        CALL METHOD yxcl_validate_input=>meth_validate_matnr
+            EXPORTING
+              i_s_matnr        = s_matnr[]
+            EXCEPTIONS
+              ex_blank_input   = 1
+              ex_invalid_input = 2
+              OTHERS           = 3.
+        IF sy-subrc IS NOT INITIAL.
+          MESSAGE e000(yo_otc) WITH text-003.
+        ENDIF.
+
+      WHEN c_vkorg.
+*----------------------------------------------------------------------*
+*  Sales Organization Validation
+*----------------------------------------------------------------------*
+        CALL METHOD yxcl_validate_input=>meth_validate_vkorg
+            EXPORTING
+              i_s_vkorg        = s_vkorg[]
+            EXCEPTIONS
+              ex_blank_input   = 1
+              ex_invalid_input = 2
+              OTHERS           = 3.
+        IF sy-subrc IS NOT INITIAL.
+          MESSAGE e000(yo_otc) WITH text-004.
+        ENDIF.
+
+      WHEN c_vtweg.
+*----------------------------------------------------------------------*
+*  Distribution Channel Validation
+*----------------------------------------------------------------------*
+        CALL METHOD yxcl_validate_input=>meth_validate_vtweg
+             EXPORTING
+               i_s_vtweg        = s_vtweg[]
+             EXCEPTIONS
+               ex_blank_input   = 1
+               ex_invalid_input = 2
+               OTHERS           = 3.
+        IF sy-subrc IS NOT INITIAL.
+          MESSAGE e000(yo_otc) WITH text-005.
+        ENDIF.
+      WHEN c_vmsta.
+*----------------------------------------------------------------------*
+*  Distribution Channel Status Validation
+*----------------------------------------------------------------------*
+        CALL METHOD o_control->o_view->meth_vmsta_validation
+          EXPORTING
+            i_s_vmsta        = s_vmsta[]
+          EXCEPTIONS
+            ex_invalid_vmsta = 1.
+        IF sy-subrc IS NOT INITIAL.
+          MESSAGE e000(yo_otc) WITH text-006.
+        ENDIF.
+      WHEN c_werks.
+*----------------------------------------------------------------------*
+*  Plant Validation
+*----------------------------------------------------------------------*
+        CALL METHOD yxcl_validate_input=>meth_validate_werks_d
+           EXPORTING
+             i_s_werks        = s_werks[]
+           EXCEPTIONS
+             ex_blank_input   = 1
+             ex_invalid_input = 2
+             OTHERS           = 3.
+        IF sy-subrc IS NOT INITIAL.
+          MESSAGE e000(yo_otc) WITH text-007.
+        ENDIF.
+     WHEN c_eanno.
+*----------------------------------------------------------------------*
+*  EAN/UPC Validation
+*----------------------------------------------------------------------*
+        CALL METHOD o_control->o_view->meth_ean11_validation
+          EXPORTING
+            i_s_ean11        = s_eanno[]
+          EXCEPTIONS
+            ex_invalid_ean11 = 1.
+        IF sy-subrc IS NOT INITIAL.
+          MESSAGE e000(yo_otc) WITH text-008.
+        ENDIF.
+      WHEN c_bismt.
+*----------------------------------------------------------------------*
+*  Old Material No Validation
+*----------------------------------------------------------------------*
+        CALL METHOD o_control->o_view->meth_bismt_validation
+          EXPORTING
+            i_s_bismt        = s_bismt[]
+          EXCEPTIONS
+            ex_invalid_bismt = 1.
+        IF sy-subrc IS NOT INITIAL.
+          MESSAGE e000(yo_otc) WITH text-009.
+        ENDIF.
+    ENDCASE.
+  ENDMETHOD.
+  METHOD meth_vmsta_validation.
+*----------------------------------------------------------------------*
+*  Check input data of Distribution Channel Status
+*----------------------------------------------------------------------*
+    SELECT vmsta UP TO 1 ROWS
+      INTO @DATA(li_vmsta)
+      FROM tvms
+      WHERE vmsta IN @i_s_vmsta.
+    ENDSELECT.
+    IF sy-subrc NE 0.
+      RAISE ex_invalid_vmsta.
+    ENDIF.
+
+  ENDMETHOD.
+  METHOD meth_ean11_validation.
+*----------------------------------------------------------------------*
+*  Check input data of EAN/UPC Code
+*----------------------------------------------------------------------*
+    SELECT ean11 UP TO 1 ROWS "#EC CI_NOFIELD
+      INTO @DATA(li_ean11)
+      FROM mara
+      WHERE ean11 IN @i_s_ean11.
+    ENDSELECT.
+    IF sy-subrc NE 0.
+      RAISE ex_invalid_ean11.
+    ENDIF.
+  ENDMETHOD.
+  METHOD meth_bismt_validation.
+*----------------------------------------------------------------------*
+*  Check input data of Old Material
+*----------------------------------------------------------------------*
+    SELECT bismt UP TO 1 ROWS
+      INTO @DATA(li_bismt)
+      FROM mara
+      WHERE bismt IN @i_s_bismt.
+    ENDSELECT.
+    IF sy-subrc NE 0.
+      RAISE ex_invalid_bismt.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+CLASS cl_output IMPLEMENTATION.
+
+  METHOD meth_display_output.
+*----------------------------------------------------------------------*
+* Local Data Declaration
+*----------------------------------------------------------------------*
+    DATA:lo_layout TYPE REF TO cl_salv_layout,
+         ls_key    TYPE salv_s_layout_key,
+         lo_events TYPE REF TO cl_salv_events_table.
+*----------------------------------------------------------------------*
+*  Get a new instance for ALV table object
+*----------------------------------------------------------------------*
+    TRY .
+        CALL METHOD cl_salv_table=>factory
+              IMPORTING
+                r_salv_table = i_alv
+              CHANGING
+                t_table      = o_control->o_model->i_final[].
+*----------------------------------------------------------------------*
+*  Get function object
+*----------------------------------------------------------------------*
+        CALL METHOD i_alv->get_functions
+              RECEIVING
+                value = i_func.
+*----------------------------------------------------------------------*
+*  Activate all Generic ALV functions
+*----------------------------------------------------------------------*
+        CALL METHOD i_func->set_all
+              EXPORTING
+                value = abap_true.
+*----------------------------------------------------------------------*
+*  Get Object with Global Settings for Display
+*----------------------------------------------------------------------*
+        i_display = i_alv->get_display_settings( ).
+*----------------------------------------------------------------------*
+*  Set Striped Pattern
+*----------------------------------------------------------------------*
+       i_display->set_striped_pattern( cl_salv_display_settings=>true ).
+        i_display->set_list_header( text-t01 ).
+*----------------------------------------------------------------------*
+*  Set Column Properties
+*----------------------------------------------------------------------*
+        CALL METHOD meth_set_column_properties.
+*----------------------------------------------------------------------*
+* Set layout
+*----------------------------------------------------------------------*
+        lo_layout = i_alv->get_layout( ).
+        ls_key-report = sy-repid.
+        lo_layout->set_key( ls_key ).
+        lo_events = i_alv->get_event( ).
+*----------------------------------------------------------------------*
+* Set handler for on click
+*----------------------------------------------------------------------*
+        SET HANDLER me->meth_on_link_click FOR lo_events.
+*----------------------------------------------------------------------*
+* Display ALV
+*----------------------------------------------------------------------*
+        i_alv->display( ).
+
+      CATCH cx_salv_msg.
+        RAISE ex_error_in_alv.
+    ENDTRY.
+  ENDMETHOD.
+  METHOD meth_on_link_click.
+    DATA: l_type(4) TYPE c.
+
+    ASSIGN o_control->o_model->i_final[ row ]
+                               TO FIELD-SYMBOL(<l_row>).
+    IF <l_row> IS ASSIGNED AND <l_row> IS NOT INITIAL.
+      CASE column.
+        WHEN 'KOTD002'.
+          IF <l_row>-kotd002 EQ c_yes.
+            l_type = c_matdet.
+            PERFORM f_setparameter USING <l_row> l_type.
+            CALL TRANSACTION 'VB13' AND
+                             SKIP FIRST SCREEN."#EC CI_CALLTA
+          ENDIF.
+        WHEN 'KOTD905'.
+          IF <l_row>-kotd905 EQ c_yes.
+            l_type = c_matdet.
+            PERFORM f_setparameter USING <l_row> l_type.
+            CALL TRANSACTION 'VB13' AND
+                             SKIP FIRST SCREEN."#EC CI_CALLTA
+          ENDIF.
+        WHEN 'KOTD906'.
+          IF <l_row>-kotd906 EQ c_yes.
+            l_type = c_matdet.
+            PERFORM f_setparameter USING <l_row> l_type.
+            CALL TRANSACTION 'VB13' AND
+                             SKIP FIRST SCREEN."#EC CI_CALLTA
+          ENDIF.
+        WHEN 'KOTD907'.
+          IF <l_row>-kotd907 EQ c_yes.
+            l_type = c_matdet.
+            PERFORM f_setparameter USING <l_row> l_type.
+            CALL TRANSACTION 'VB13' AND
+                              SKIP FIRST SCREEN."#EC CI_CALLTA
+          ENDIF.
+        WHEN 'KOTD908'.
+          IF <l_row>-kotd908 EQ c_yes.
+            l_type = c_matdet.
+            PERFORM f_setparameter USING <l_row> l_type.
+            CALL TRANSACTION 'VB13' AND
+                              SKIP FIRST SCREEN."#EC CI_CALLTA
+          ENDIF.
+        WHEN 'AP846'.
+          IF <l_row>-ap846 EQ c_yes.
+            l_type = c_condtyp.
+            PERFORM f_setparameter USING <l_row> l_type.
+            CALL TRANSACTION 'VK13' AND
+                              SKIP FIRST SCREEN."#EC CI_CALLTA
+          ENDIF.
+        WHEN 'AP841'.
+          IF <l_row>-ap841 EQ c_yes.
+            l_type = c_condtyp.
+            PERFORM f_setparameter USING <l_row> l_type.
+            CALL TRANSACTION 'VK13' AND
+                              SKIP FIRST SCREEN."#EC CI_CALLTA
+          ENDIF.
+        WHEN 'AP839'.
+          IF <l_row>-ap839 EQ c_yes.
+            l_type = c_condtyp.
+            PERFORM f_setparameter USING <l_row> l_type.
+            CALL TRANSACTION 'VK13' AND
+                              SKIP FIRST SCREEN."#EC CI_CALLTA
+          ENDIF.
+        WHEN 'AP816'.
+          IF <l_row>-ap816 EQ c_yes.
+            l_type = c_condtyp.
+            PERFORM f_setparameter USING <l_row> l_type.
+            CALL TRANSACTION 'VK13' AND
+                              SKIP FIRST SCREEN."#EC CI_CALLTA
+          ENDIF.
+        WHEN 'AP989'.
+          IF <l_row>-ap989 EQ c_yes.
+            l_type = c_condtyp.
+            PERFORM f_setparameter USING <l_row> l_type.
+            CALL TRANSACTION 'VK13' AND
+                              SKIP FIRST SCREEN. "#EC CI_CALLTA
+          ENDIF.
+        WHEN 'AP844'.
+          IF <l_row>-ap844 EQ c_yes.
+            l_type = c_condtyp.
+            PERFORM f_setparameter USING <l_row> l_type.
+            CALL TRANSACTION 'VK13' AND
+                              SKIP FIRST SCREEN."#EC CI_CALLTA
+          ENDIF.
+        WHEN 'AP817'.
+          IF <l_row>-ap817 EQ c_yes.
+            l_type = c_condtyp.
+            PERFORM f_setparameter USING <l_row> l_type.
+            CALL TRANSACTION 'VK13' AND
+                              SKIP FIRST SCREEN."#EC CI_CALLTA
+          ENDIF.
+        WHEN 'AP819'.
+          IF <l_row>-ap819 EQ c_yes.
+            l_type = c_condtyp.
+            PERFORM f_setparameter USING <l_row> l_type.
+            CALL TRANSACTION 'VK13' AND
+                              SKIP FIRST SCREEN."#EC CI_CALLTA
+          ENDIF.
+        WHEN 'AP822'.
+          IF <l_row>-ap822 EQ c_yes.
+            l_type = c_condtyp.
+            PERFORM f_setparameter USING <l_row> l_type.
+            CALL TRANSACTION 'VK13' AND
+                              SKIP FIRST SCREEN."#EC CI_CALLTA
+          ENDIF.
+      ENDCASE.
+    ENDIF.
+  ENDMETHOD.
+  METHOD meth_set_column_properties.
+*----------------------------------------------------------------------*
+* Local Data Declaration
+*----------------------------------------------------------------------*
+    DATA:
+        lo_columns    TYPE REF TO cl_salv_columns_table,
+        l_count       TYPE numc2,
+        l_flag        TYPE boolean,
+        l_column      TYPE i.
+
+*---> set columns properties
+    lo_columns    = i_alv->get_columns( ).
+    lo_columns->set_optimize( abap_true ).
+
+    TRY .
+        l_count = '01'.
+        l_column = 1.
+        PERFORM add_column TABLES i_field.
+        LOOP AT i_field ASSIGNING FIELD-SYMBOL(<l_field>).
+          IF <l_field>-fieldname CP 'KOTD*' OR
+             <l_field>-fieldname CP 'AP*'.
+            l_flag = abap_true.
+          ENDIF.
+          PERFORM set_column USING <l_field>-fieldname
+                                   l_count
+                                   l_flag
+                                   lo_columns
+                                   l_column.
+          l_count = l_count + 1.
+          l_column = l_column + 1.
+        ENDLOOP.
+        CLEAR: l_count,l_column.
+      CATCH cx_salv_not_found.                          "#EC NO_HANDLER
+    ENDTRY.
+
+  ENDMETHOD.
+ENDCLASS.
+CLASS cl_model IMPLEMENTATION.
+
+  METHOD meth_get_data.
+*----------------------------------------------------------------------*
+*  Fetch MARA,MVKE and MARD table data
+*----------------------------------------------------------------------*
+    CALL METHOD meth_get_mara_mvke_mard
+        EXCEPTIONS
+            ex_no_data = 1.
+    IF sy-subrc NE 0.
+      RAISE ex_no_data.
+    ENDIF.
+*----------------------------------------------------------------------*
+*  Fetch Material Determination Table Data
+*----------------------------------------------------------------------*
+    CALL METHOD meth_get_mat_det_data.
+*----------------------------------------------------------------------*
+*  Fetch Active Price Table Data
+*----------------------------------------------------------------------*
+    CALL METHOD meth_get_active_price.
+*----------------------------------------------------------------------*
+*  Prepare final output table data
+*----------------------------------------------------------------------*
+    CALL METHOD meth_prepare_final_table.
+
+  ENDMETHOD.
+  METHOD meth_get_mara_mvke_mard.
+
+    SELECT a~matnr,
+           b~maktx,
+           a~ersda,
+           a~bismt,
+           a~meins,
+           a~ean11,
+           c~vkorg,
+           c~vtweg,
+           c~vmsta,
+           c~vmstd,
+           c~vrkme,
+           d~werks,
+           d~lgort FROM mara AS a
+           INNER JOIN makt AS b
+           ON a~matnr = b~matnr
+           AND b~spras = @sy-langu
+           LEFT OUTER JOIN mvke AS c
+           ON a~matnr = c~matnr
+           LEFT OUTER JOIN mard AS d
+           ON a~matnr = d~matnr
+           INTO TABLE @i_mara_mvke_mard
+           WHERE a~matnr IN @s_matnr[]
+           AND a~ersda IN @s_ersda[]
+           AND a~ean11 IN @s_eanno[]
+           AND a~bismt IN @s_bismt[]
+           AND c~vkorg IN @s_vkorg[]
+           AND c~vtweg IN @s_vtweg[]
+           AND c~vmsta IN @s_vmsta[]
+           AND d~werks IN @s_werks[].
+    IF sy-subrc IS INITIAL.
+      SORT i_mara_mvke_mard[] BY matnr.
+*--> Get VKORG
+      i_vkorg = VALUE #( FOR ls_vkorg IN i_mara_mvke_mard
+                        ( sign = c_sign option = c_option
+                          low = ls_vkorg-vkorg ) ).
+      SORT i_vkorg BY low.
+      DELETE ADJACENT DUPLICATES FROM i_vkorg COMPARING low.
+*--> Get VTWEG
+      i_vtweg = VALUE #( FOR ls_vtweg IN i_mara_mvke_mard
+                        ( sign = c_sign option = c_option
+                          low = ls_vtweg-vtweg ) ).
+      SORT i_vtweg BY low.
+      DELETE ADJACENT DUPLICATES FROM i_vtweg COMPARING low.
+*--> Get MATNR
+      i_matnr = VALUE #( FOR ls_matnr IN i_mara_mvke_mard
+                        ( sign = c_sign option = c_option
+                          low = ls_matnr-matnr ) ).
+      SORT i_matnr BY low.
+      DELETE ADJACENT DUPLICATES FROM i_matnr COMPARING low.
+*--> Get WERKS
+      i_werks = VALUE #( FOR ls_werks IN i_mara_mvke_mard
+                        ( sign = c_sign option = c_option
+                          low = ls_werks-werks ) ).
+      SORT i_werks BY low.
+      DELETE ADJACENT DUPLICATES FROM i_werks COMPARING low.
+*--> Get VRKME
+      i_vrkme = VALUE #( FOR ls_vrkme IN i_mara_mvke_mard
+                        ( sign = c_sign option = c_option
+                          vrkme_low = ls_vrkme-vrkme ) ).
+      SORT i_vrkme BY vrkme_low.
+      DELETE ADJACENT DUPLICATES FROM i_vrkme COMPARING vrkme_low.
+    ELSE.
+      RAISE ex_no_data.
+    ENDIF.
+  ENDMETHOD.
+  METHOD meth_get_mat_det_data.
+    IF i_mara_mvke_mard[] IS NOT INITIAL.
+*--> Get KOTD002
+      SELECT vkorg,
+             vtweg,
+             matwa,
+             knumh FROM kotd002
+             INTO TABLE @i_kotd002
+             WHERE vkorg IN @i_vkorg
+             AND   vtweg IN @i_vtweg
+             AND   matwa IN @i_matnr.
+      IF sy-subrc IS INITIAL.
+        SORT i_kotd002[] BY matwa.
+      ENDIF.
+*--> Get KOTD905
+      SELECT vkorg,
+             vtweg,
+             matwa,
+             knumh FROM kotd905
+             INTO TABLE @i_kotd905
+             WHERE vkorg IN @i_vkorg
+             AND   vtweg IN @i_vtweg
+             AND   matwa IN @i_matnr.
+      IF sy-subrc IS INITIAL.
+        SORT i_kotd905[] BY matwa.
+      ENDIF.
+*--> Get KOTD906
+      SELECT vkorg,
+             vtweg,
+             matwa,
+             knumh FROM kotd906
+             INTO TABLE @i_kotd906
+             WHERE vkorg IN @i_vkorg
+             AND   vtweg IN @i_vtweg
+             AND   matwa IN @i_matnr.
+      IF sy-subrc IS INITIAL.
+        SORT i_kotd906[] BY matwa.
+      ENDIF.
+*--> Get KOTD907
+      SELECT vkorg,
+             vtweg,
+             werks,
+             matwa,
+             knumh FROM kotd907
+             INTO TABLE @i_kotd907
+             WHERE vkorg IN @i_vkorg
+             AND   vtweg IN @i_vtweg
+             AND   werks IN @i_werks
+             AND   matwa IN @i_matnr.
+      IF sy-subrc IS INITIAL.
+        SORT i_kotd907[] BY matwa.
+      ENDIF.
+*--> Get KOTD908
+      SELECT vkorg,
+             matwa,
+             knumh FROM kotd908
+             INTO TABLE @i_kotd908
+             WHERE vkorg IN @i_vkorg
+             AND   matwa IN @i_matnr.
+      IF sy-subrc IS INITIAL.
+        SORT i_kotd908[] BY matwa.
+      ENDIF.
+    ENDIF.
+  ENDMETHOD.
+  METHOD meth_get_active_price.
+    IF i_mara_mvke_mard[] IS NOT INITIAL.
+*--> Get A846
+      SELECT vkorg,
+             vtweg,
+             matnr,
+             knumh FROM a846
+             INTO TABLE @i_a846
+             WHERE vkorg IN @i_vkorg
+             AND   vtweg IN @i_vtweg
+             AND   matnr IN @i_matnr.
+      IF sy-subrc IS INITIAL.
+        SORT i_a846[] BY matnr.
+      ENDIF.
+*--> Get A841
+      SELECT vkorg,
+             matnr,
+             knumh FROM a841
+             INTO TABLE @i_a841
+             WHERE vkorg IN @i_vkorg
+             AND   matnr IN @i_matnr.
+      IF sy-subrc IS INITIAL.
+        SORT i_a841[] BY matnr.
+      ENDIF.
+*--> Get A839
+      SELECT vkorg,
+             vtweg,
+             matnr,
+             knumh FROM a839
+             INTO TABLE @i_a839
+             WHERE vkorg IN @i_vkorg
+             AND   vtweg IN @i_vtweg
+             AND   matnr IN @i_matnr.
+      IF sy-subrc IS INITIAL.
+        SORT i_a839[] BY matnr.
+      ENDIF.
+*--> Get A816
+      SELECT vkorg,
+             vtweg,
+             matnr,
+             knumh FROM a816
+             INTO TABLE @i_a816
+             WHERE vkorg IN @i_vkorg
+             AND   vtweg IN @i_vtweg
+             AND   matnr IN @i_matnr.
+      IF sy-subrc IS INITIAL.
+        SORT i_a816[] BY matnr.
+      ENDIF.
+*--> Get A989
+      SELECT vkorg,
+             vtweg,
+             vrkme,
+             matnr,
+             knumh FROM a989
+             INTO TABLE @i_a989
+             WHERE vkorg IN @i_vkorg
+             AND   vtweg IN @i_vtweg
+             AND   vrkme IN @i_vrkme
+             AND   matnr IN @i_matnr.
+      IF sy-subrc IS INITIAL.
+        SORT i_a989[] BY matnr.
+      ENDIF.
+*--> Get A844
+      SELECT vkorg,
+             vtweg,
+             matnr,
+             knumh FROM a844
+             INTO TABLE @i_a844
+             WHERE vkorg IN @i_vkorg
+             AND   vtweg IN @i_vtweg
+             AND   matnr IN @i_matnr.
+      IF sy-subrc IS INITIAL.
+        SORT i_a844[] BY matnr.
+      ENDIF.
+*--> Get A817
+      SELECT vkorg,
+             vtweg,
+             knumh FROM a817
+             INTO TABLE @i_a817
+             WHERE vkorg IN @i_vkorg
+             AND   vtweg IN @i_vtweg.
+      IF sy-subrc IS INITIAL.
+        SORT i_a817[] BY vkorg.
+      ENDIF.
+*--> Get A819
+      SELECT vkorg,
+             vtweg,
+             knumh FROM a819
+             INTO TABLE @i_a819
+             WHERE vkorg IN @i_vkorg
+             AND   vtweg IN @i_vtweg.
+      IF sy-subrc IS INITIAL.
+        SORT i_a819[] BY vkorg.
+      ENDIF.
+*--> Get A822
+      SELECT vkorg,
+             matnr,
+             knumh FROM a822
+             INTO TABLE @i_a822
+             WHERE vkorg IN @i_vkorg
+             AND   matnr IN @i_matnr.
+      IF sy-subrc IS INITIAL.
+        SORT i_a822[] BY matnr.
+      ENDIF.
+    ENDIF.
+  ENDMETHOD.
+  METHOD meth_prepare_final_table.
+    IF i_mara_mvke_mard[] IS NOT INITIAL.
+
+      LOOP AT i_mara_mvke_mard ASSIGNING FIELD-SYMBOL(<l_mara_mvke>).
+       APPEND INITIAL LINE TO i_final ASSIGNING FIELD-SYMBOL(<l_final>).
+        <l_final> = CORRESPONDING #( <l_mara_mvke> ).
+*--> Check Material Determination Details
+        IF line_exists( i_kotd002[ vkorg = <l_mara_mvke>-vkorg
+                                   vtweg = <l_mara_mvke>-vtweg
+                                   matwa = <l_mara_mvke>-matnr ] ).
+          <l_final>-kotd002 = c_yes.
+        ELSE.
+          <l_final>-kotd002 = c_no.
+        ENDIF.
+
+        IF line_exists( i_kotd905[ vkorg = <l_mara_mvke>-vkorg
+                                   vtweg = <l_mara_mvke>-vtweg
+                                   matwa = <l_mara_mvke>-matnr ] ).
+          <l_final>-kotd905 = c_yes.
+        ELSE.
+          <l_final>-kotd905 = c_no.
+        ENDIF.
+
+        IF line_exists( i_kotd906[ vkorg = <l_mara_mvke>-vkorg
+                                   vtweg = <l_mara_mvke>-vtweg
+                                   matwa = <l_mara_mvke>-matnr ] ).
+          <l_final>-kotd906 = c_yes.
+        ELSE.
+          <l_final>-kotd906 = c_no.
+        ENDIF.
+
+        IF line_exists( i_kotd907[ vkorg = <l_mara_mvke>-vkorg
+                                   vtweg = <l_mara_mvke>-vtweg
+                                   werks = <l_mara_mvke>-werks
+                                   matwa = <l_mara_mvke>-matnr ] ).
+          <l_final>-kotd907 = c_yes.
+        ELSE.
+          <l_final>-kotd907 = c_no.
+        ENDIF.
+
+        IF line_exists( i_kotd908[ vkorg = <l_mara_mvke>-vkorg
+                                   matwa = <l_mara_mvke>-matnr ] ).
+          <l_final>-kotd908 = c_yes.
+        ELSE.
+          <l_final>-kotd908 = c_no.
+        ENDIF.
+
+*---> Check Active Price Details
+        IF line_exists( i_a846[ vkorg = <l_mara_mvke>-vkorg
+                                vtweg = <l_mara_mvke>-vtweg
+                                matnr = <l_mara_mvke>-matnr ] ).
+          <l_final>-ap846 = c_yes.
+        ELSE.
+          <l_final>-ap846 = c_no.
+        ENDIF.
+
+        IF line_exists( i_a841[ vkorg = <l_mara_mvke>-vkorg
+                                matnr = <l_mara_mvke>-matnr ] ).
+          <l_final>-ap841 = c_yes.
+        ELSE.
+          <l_final>-ap841 = c_no.
+        ENDIF.
+
+        IF line_exists( i_a839[ vkorg = <l_mara_mvke>-vkorg
+                                vtweg = <l_mara_mvke>-vtweg
+                                matnr = <l_mara_mvke>-matnr ] ).
+          <l_final>-ap839 = c_yes.
+        ELSE.
+          <l_final>-ap839 = c_no.
+        ENDIF.
+
+        IF line_exists( i_a816[ vkorg = <l_mara_mvke>-vkorg
+                                vtweg = <l_mara_mvke>-vtweg
+                                matnr = <l_mara_mvke>-matnr ] ).
+          <l_final>-ap816 = c_yes.
+        ELSE.
+          <l_final>-ap816 = c_no.
+        ENDIF.
+
+        IF line_exists( i_a989[ vkorg = <l_mara_mvke>-vkorg
+                                vtweg = <l_mara_mvke>-vtweg
+                                vrkme = <l_mara_mvke>-vrkme
+                                matnr = <l_mara_mvke>-matnr ] ).
+          <l_final>-ap989 = c_yes.
+        ELSE.
+          <l_final>-ap989 = c_no.
+        ENDIF.
+
+        IF line_exists( i_a844[ vkorg = <l_mara_mvke>-vkorg
+                               vtweg = <l_mara_mvke>-vtweg
+                               matnr = <l_mara_mvke>-matnr ] ).
+          <l_final>-ap844 = c_yes.
+        ELSE.
+          <l_final>-ap844 = c_no.
+        ENDIF.
+
+        IF line_exists( i_a817[ vkorg = <l_mara_mvke>-vkorg
+                               vtweg = <l_mara_mvke>-vtweg ] ).
+          <l_final>-ap817 = c_yes.
+        ELSE.
+          <l_final>-ap817 = c_no.
+        ENDIF.
+
+        IF line_exists( i_a819[ vkorg = <l_mara_mvke>-vkorg
+                               vtweg = <l_mara_mvke>-vtweg ] ).
+          <l_final>-ap819 = c_yes.
+        ELSE.
+          <l_final>-ap819 = c_no.
+        ENDIF.
+
+        IF line_exists( i_a822[ vkorg = <l_mara_mvke>-vkorg
+                               matnr = <l_mara_mvke>-matnr ] ).
+          <l_final>-ap822 = c_yes.
+        ELSE.
+          <l_final>-ap822 = c_no.
+        ENDIF.
+
+      ENDLOOP.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+CLASS cl_controller_program IMPLEMENTATION.
+
+  METHOD meth_get_object.
+*----------------------------------------------------------------------*
+*   Data Declaration
+*----------------------------------------------------------------------*
+    DATA: lo_object TYPE REF TO object.
+*----------------------------------------------------------------------*
+* Instantiate the object
+*----------------------------------------------------------------------*
+    CREATE OBJECT lo_object TYPE (if_name).
+    IF sy-subrc EQ 0.
+      CASE if_name.
+
+        WHEN 'CL_MODEL'.
+*----------------------------------------------------------------------*
+* Assign the MODEL class object
+*----------------------------------------------------------------------*
+          o_model ?= lo_object.
+
+        WHEN 'CL_OUTPUT'.
+*----------------------------------------------------------------------*
+* Assign the OUTPUT class object
+*----------------------------------------------------------------------*
+          o_output ?= lo_object.
+
+        WHEN 'CL_VIEW_SELECTION'.
+*----------------------------------------------------------------------*
+* Assign the VIEW class object
+*----------------------------------------------------------------------*
+          o_view ?= lo_object.
+
+        WHEN OTHERS.
+      ENDCASE.
+    ELSE.
+*----------------------------------------------------------------------*
+* Raise Error
+*----------------------------------------------------------------------*
+      RAISE ex_error_initializing.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+CLASS cl_report_events IMPLEMENTATION.
+*----------------------------------------------------------------------*
+* Controller Initialization
+*----------------------------------------------------------------------*
+  METHOD meth_initialization.
+*----------------------------------------------------------------------*
+**--   Create Instances
+*----------------------------------------------------------------------*
+    CREATE OBJECT: o_control,
+                   o_report_events.
+
+  ENDMETHOD.
+  METHOD meth_start_of_sel.
+*----------------------------------------------------------------------*
+* Get the object from Control
+*----------------------------------------------------------------------*
+    CALL METHOD o_control->meth_get_object
+      EXPORTING
+        if_name = 'CL_MODEL'.
+
+    CALL METHOD o_control->o_model->meth_get_data
+      EXCEPTIONS
+        ex_no_data      = 1.
+    IF sy-subrc IS NOT INITIAL.
+      CASE sy-subrc.
+        WHEN 1.
+          MESSAGE s011(yo_otc) DISPLAY LIKE 'E'.
+        WHEN OTHERS.
+      ENDCASE.
+      LEAVE LIST-PROCESSING.
+    ENDIF.
+  ENDMETHOD.
+  METHOD meth_end_of_sel.
+*----------------------------------------------------------------------*
+* If Final table has some value then proceed for ALV output
+*----------------------------------------------------------------------*
+    CHECK o_control->o_model->i_final[] IS NOT INITIAL.
+
+*----------------------------------------------------------------------*
+* Get the object from Control
+*----------------------------------------------------------------------*
+    CALL METHOD o_control->meth_get_object
+      EXPORTING
+        if_name = 'CL_OUTPUT'.
+*----------------------------------------------------------------------*
+* Call method to display output ALV
+*----------------------------------------------------------------------*
+    CALL METHOD o_control->o_output->meth_display_output
+      EXCEPTIONS
+        ex_error_in_alv = 1.
+*----------------------------------------------------------------------*
+* Free Model data I_FINAL
+*----------------------------------------------------------------------*
+    FREE: o_control->o_model->i_final[].
+  ENDMETHOD.
+ENDCLASS.
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+INCLUDE yon_duplicate_ean_f01. "Subroutines
+--------------------------------------------------------------------------------------------------------------------------------
+FORM f_view_instance .
+  IF o_control->o_view IS INITIAL.
+*----------------------------------------------------------------------*
+* Get the object from Control
+*----------------------------------------------------------------------*
+    CALL METHOD o_control->meth_get_object
+      EXPORTING
+        if_name = 'CL_VIEW_SELECTION'
+      EXCEPTIONS
+           ex_error_initializing = 1
+           OTHERS                = 2.
+    IF sy-subrc IS NOT INITIAL.
+      MESSAGE e000(yo_otc) WITH text-002 .
+    ENDIF.
+  ENDIF.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*&      Form  ADD_COLUMN
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_I_FIELD  text
+*----------------------------------------------------------------------*
+FORM add_column TABLES p_i_field TYPE ty_t_field.
+*----------------------------------------------------------------------*
+*      Local Data Declaration
+*----------------------------------------------------------------------*
+  DATA: ls_fieldname TYPE ty_field.
+
+  ls_fieldname-fieldname = 'MATNR'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'MAKTX'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'ERSDA'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'BISMT'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'MEINS'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'EAN11'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'VKORG'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'VTWEG'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'VMSTA'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'VMSTD'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'VRKME'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'WERKS'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'LGORT'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'KOTD002'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'KOTD905'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'KOTD906'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'KOTD907'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'KOTD908'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'AP846'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'AP841'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'AP839'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'AP816'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'AP989'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'AP844'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'AP817'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'AP819'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+  ls_fieldname-fieldname = 'AP822'.
+  APPEND ls_fieldname TO p_i_field.
+  CLEAR ls_fieldname.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*&      Form  SET_COLUMN
+*&---------------------------------------------------------------------*
+*       Set Fied Catalog
+*----------------------------------------------------------------------*
+*      -->P_FIELDNAME  text
+*----------------------------------------------------------------------*
+FORM set_column  USING p_fieldname TYPE lvc_fname
+                       p_count TYPE numc2
+                       p_flag TYPE boolean
+                       p_lo_columns TYPE REF TO cl_salv_columns_table
+                       p_column TYPE i.
+*----------------------------------------------------------------------*
+*      Local Data Declaration
+*----------------------------------------------------------------------*
+  DATA:
+      lo_column     TYPE REF TO cl_salv_column_table,
+      l_colno       TYPE i,
+      l_medium_text TYPE scrtext_m,
+      l_long_text   TYPE scrtext_l,
+      l_short_text  TYPE scrtext_s,
+      lv_fieldname  TYPE string.
+
+  l_colno = p_column.
+  TRY.
+      lo_column ?= p_lo_columns->get_column( p_fieldname ).
+    CATCH cx_salv_not_found ##NO_HANDLER .
+  ENDTRY.
+  p_lo_columns->set_column_position( columnname = p_fieldname
+                                     position   = l_colno ).
+  lo_column->set_key( abap_true ).
+  lo_column->set_alignment( if_salv_c_alignment=>left ).
+
+  lv_fieldname = 'TEXT-O' && p_count.
+  ASSIGN (lv_fieldname) TO FIELD-SYMBOL(<l_small>).
+  l_short_text = <l_small>.
+
+  p_count = p_count + 1.
+  lv_fieldname = 'TEXT-O' && p_count.
+  ASSIGN (lv_fieldname) TO FIELD-SYMBOL(<l_medium>).
+  l_medium_text = <l_medium>.
+
+  p_count = p_count + 1.
+  lv_fieldname = 'TEXT-O' && p_count.
+  ASSIGN (lv_fieldname) TO FIELD-SYMBOL(<l_long>).
+  l_long_text = <l_long>.
+
+  lo_column->set_long_text( l_long_text ).
+  lo_column->set_medium_text( l_medium_text ).
+  lo_column->set_short_text( l_short_text ).
+  IF p_flag = abap_true.
+    lo_column->set_cell_type( if_salv_c_cell_type=>hotspot ).
+  ENDIF.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*&      Form  F_SETPARAMETER
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_<L_ROW>  text
+*----------------------------------------------------------------------*
+FORM f_setparameter USING p_row TYPE ty_final
+                          p_type TYPE c.
+
+  IF p_type = c_matdet.
+*--> Material Determination
+    SET PARAMETER ID 'VGD' FIELD c_matdet.
+    SET PARAMETER ID 'WRK' FIELD p_row-werks.
+  ELSEIF p_type = c_condtyp.
+*--> Active Price
+    SET PARAMETER ID 'VKS' FIELD c_condtyp.
+  ENDIF.
+
+  SET PARAMETER ID 'KDA' FIELD sy-datum.
+  SET PARAMETER ID 'VKO' FIELD p_row-vkorg.
+  SET PARAMETER ID 'VTW' FIELD p_row-vtweg.
+  SET PARAMETER ID 'MAT' FIELD p_row-matnr.
+
+ENDFORM.
